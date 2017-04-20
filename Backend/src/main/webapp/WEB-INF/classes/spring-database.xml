@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:jpa="http://www.springframework.org/schema/data/jpa"
+	xsi:schemaLocation="
+        http://www.springframework.org/schema/beans     
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/tx 
+        http://www.springframework.org/schema/tx/spring-tx.xsd
+        http://www.springframework.org/schema/context 
+        http://www.springframework.org/schema/context/spring-context.xsd
+        http://www.springframework.org/schema/data/jpa 
+		http://www.springframework.org/schema/data/jpa/spring-jpa-1.8.xsd ">
+
+
+	<!-- JNDI 1-->
+	<bean id="csJndiDataSource" class="org.springframework.jndi.JndiObjectFactoryBean">
+		<property name="jndiName" value="java:comp/env/jdbc/backend" />
+	</bean>
+	<jpa:repositories base-package="com.cs.dao.springsecurity" 
+		entity-manager-factory-ref="entityManagerFactory" 
+ 		transaction-manager-ref="transactionManager" />
+
+	<bean id="hibernateJpaVendorAdapter"
+		class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter" />
+
+	<bean id="entityManagerFactory"
+		class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+		<property name="dataSource" ref="csJndiDataSource" />
+		<property name="persistenceUnitName" value="appPU" />
+		<property name="jpaVendorAdapter" ref="hibernateJpaVendorAdapter" />
+		<!-- Set JPA properties -->
+		<property name="jpaProperties">
+			<props>
+				<prop key="hibernate.dialect">org.hibernate.dialect.MySQL5Dialect</prop>
+				<prop key="javax.persistence.schema-generation.database.action">none</prop>
+				<prop key="hibernate.show_sql">true</prop>
+				<prop key="hibernate.format_sql">true</prop>
+				<prop key="hibernate.validationQuery">select 1</prop>
+			</props>
+		</property>
+		<property name="packagesToScan" value="com.cs.model.springsecurity" />
+		<!-- entities <property name="packagesToScan"> <array> <value>com.cs.model</value> 
+			</array> </property> -->
+		<property name="sharedCacheMode" value="ENABLE_SELECTIVE" />
+		<property name="validationMode" value="NONE" />
+	</bean>
+
+	<bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
+		<property name="entityManagerFactory" ref="entityManagerFactory" />
+	</bean>
+
+	<!-- Enable annotation driven transaction management -->
+	<tx:annotation-driven  transaction-manager="transactionManager" />
+	
+	
+	<!-- JNDI 2-->
+	<bean id="csJndiDataSource2" class="org.springframework.jndi.JndiObjectFactoryBean">
+		<property name="jndiName" value="java:comp/env/jdbc/game" />
+	</bean>
+	<jpa:repositories base-package="com.cs.dao.csentity" 
+		entity-manager-factory-ref="entityManagerFactory2" 
+ 		transaction-manager-ref="transactionManager2" />
+
+	<bean id="hibernateJpaVendorAdapter2"
+		class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter" />
+
+	<bean id="entityManagerFactory2"
+		class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+		<property name="persistenceUnitName" value="appPU2" />
+		<property name="dataSource" ref="csJndiDataSource2" />
+		<property name="jpaVendorAdapter" ref="hibernateJpaVendorAdapter2" />
+		<!-- Set JPA properties -->
+		<property name="jpaProperties">
+			<props>
+				<prop key="hibernate.dialect">org.hibernate.dialect.MySQL5Dialect</prop>
+				<prop key="javax.persistence.schema-generation.database.action">none</prop>
+				<prop key="hibernate.show_sql">true</prop>
+				<prop key="hibernate.format_sql">true</prop>
+				<prop key="hibernate.validationQuery">select 1</prop>
+			</props>
+		</property>
+		<property name="packagesToScan" value="com.cs.model.csentity" />
+		<!-- entities <property name="packagesToScan"> <array> <value>com.cs.model</value> 
+			</array> </property> -->
+		<property name="sharedCacheMode" value="ENABLE_SELECTIVE" />
+		<property name="validationMode" value="NONE" />
+	</bean>
+
+	<bean id="transactionManager2" class="org.springframework.orm.jpa.JpaTransactionManager">
+		<property name="entityManagerFactory" ref="entityManagerFactory2" />
+	</bean>
+
+	<!-- Enable annotation driven transaction management -->
+	<tx:annotation-driven  transaction-manager="transactionManager2" />
+	
+	<context:component-scan base-package="com.cs.service" />
+</beans>

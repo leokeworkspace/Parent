@@ -1,0 +1,10 @@
+{
+    "login" : {
+        "account" : "帳號 :",
+        "pw" : "密碼 :",
+        "login" : "登入"
+    },
+    "title" : {
+        "title" : "Childhood 後台管理系統"
+    }
+}

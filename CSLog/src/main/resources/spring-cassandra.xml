@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:cassandra="http://www.springframework.org/schema/data/cassandra"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/data/cassandra 
+						http://www.springframework.org/schema/data/cassandra/spring-cassandra-1.0.xsd
+					    http://www.springframework.org/schema/beans 
+					    http://www.springframework.org/schema/beans/spring-beans.xsd
+					    http://www.springframework.org/schema/context 
+					    http://www.springframework.org/schema/context/spring-context.xsd">
+    <!--  
+	<context:property-placeholder location="classpath:cassandra.properties" />
+
+	<bean class="com.datastax.driver.core.PlainTextAuthProvider" id="plainTextAuthProvider">
+		<constructor-arg name="username" value="${cassandra.username}"></constructor-arg>
+		<constructor-arg name="password" value="${cassandra.password}"></constructor-arg>
+	</bean>
+
+	<cassandra:cluster id="cassandraCluster"
+		jmx-reporting-enabled="true" auth-info-provider-ref="plainTextAuthProvider"
+		contact-points="${cassandra.contactpoints}" port="${cassandra.port}" />
+	<cassandra:session id="cassandraSession" keyspace-name="${cassandra.keyspace}"
+		cluster-ref="cassandraCluster" />
+	<cassandra:mapping entity-base-packages="com.cs.model.cassandraEntity" />
+	<cassandra:converter />
+	<cassandra:template id="cqlTemplate" />
+	<cassandra:repositories base-package="com.cs.dao.cassandraEntity" cassandra-template-ref="cqlTemplate" />
+	-->
+	
+	<context:property-placeholder location="classpath:cassandra.properties" />
+	<!-- 权限 策略 -->
+	<bean id="authProvider" class="com.datastax.driver.auth.DseAuthProvider" />
+	<!-- 负载均衡 策略 -->
+	<bean id="loadBalancingPolicy"
+		class="com.datastax.driver.core.policies.DCAwareRoundRobinPolicy">
+		<constructor-arg name="localDc" value="${lb.policy.dcAware.localDc}" />
+		<constructor-arg name="usedHostsPerRemoteDc"
+			value="${lb.policy.dcAware.remoteHosts}" />
+	</bean>
+	
+	<!-- -->
+	<bean id="reconnectionPolicy"
+		class="com.datastax.driver.core.policies.ConstantReconnectionPolicy">
+		<constructor-arg name="constantDelayMs"
+			value="${cluster.reconnection.delayMillis}" />
+	</bean>
+
+	<!-- -->
+	<bean id="retryPolicy"
+		class="com.datastax.driver.core.policies.DowngradingConsistencyRetryPolicy" />
+
+	<!-- orm -->
+	<cassandra:mapping entity-base-packages="com.cs.model.cassandraEntity">
+		<!-- <cassandra:entity class="com.flamingo.positive.dto.News"> <cassandra:table 
+			name="news" /> </cassandra:entity> -->
+	</cassandra:mapping>
+	<!-- 类型转换 -->
+	<cassandra:converter />
+
+	<!-- -->
+	<cassandra:cluster contact-points="${cluster.contactPoints}"
+		port="${cluster.port}" compression="${cluster.compression}"
+		auth-info-provider-ref="authProvider" username="${auth.username}"
+		password="${auth.password}" metrics-enabled="${cluster.metricsEnabled}"
+		jmx-reporting-enabled="${cluster.jmxReportingEnabled}"
+		reconnection-policy-ref="reconnectionPolicy" retry-policy-ref="retryPolicy"
+		load-balancing-policy-ref="loadBalancingPolicy">
+		<cassandra:local-pooling-options
+			min-simultaneous-requests="${local.min.requests}"
+			max-simultaneous-requests="${local.max.requests}" core-connections="${local.core.connections}"
+			max-connections="${local.max.connections}" />
+		<cassandra:remote-pooling-options
+			min-simultaneous-requests="${remote.min.requests}"
+			max-simultaneous-requests="${remote.max.requests}" core-connections="${remote.core.connections}"
+			max-connections="${remote.max.connections}" />
+		<cassandra:socket-options
+			connect-timeout-millis="${socket.connectTimeoutMillis}" keep-alive="${socket.keepAlive}"
+			read-timeout-millis="${socket.readTimeoutMillis}" reuse-address="${socket.reuseAddress}"
+			so-linger="${socket.soLinger}" tcp-no-delay="${socket.tcpNoDelay}"
+			receive-buffer-size="${socket.receiveBufferSize}" send-buffer-size="${socket.sendBufferSize}" />
+		<cassandra:keyspace name="${keyspace.name}" action="${keyspace.action}" />
+	</cassandra:cluster>
+
+	<!-- 当前使用scheam -->
+	<cassandra:session keyspace-name="${keyspace.name}" />
+
+	<!-- <bean id="cqlTemplate" class="org.springframework.cassandra.core.CqlTemplate"> 
+		<constructor-arg ref="cassandraSession" /> </bean> -->
+
+	<!-- cassandra operater -->
+	<cassandra:template id="cqlTemplate" />
+	<!-- spring data 接口 -->
+	<cassandra:repositories base-package="com.cs.dao.cassandraEntity" />
+
+	
+	
+</beans>

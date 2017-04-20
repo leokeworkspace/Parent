@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mvc="http://www.springframework.org/schema/mvc" xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:websocket="http://www.springframework.org/schema/websocket"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans     
+						   http://www.springframework.org/schema/beans/spring-beans.xsd
+					       http://www.springframework.org/schema/mvc 
+					       http://www.springframework.org/schema/mvc/spring-mvc.xsd
+					       http://www.springframework.org/schema/context 
+					       http://www.springframework.org/schema/context/spring-context.xsd 
+					       http://www.springframework.org/schema/websocket 
+					       http://www.springframework.org/schema/websocket/spring-websocket-4.2.xsd">
+
+	<context:component-scan base-package="com.cs.controller" />
+	<context:component-scan base-package="com.cs.websocket" />
+	<bean
+		class="org.springframework.web.servlet.view.InternalResourceViewResolver"
+		p:prefix="/WEB-INF/jsp/" p:suffix=".jsp">
+	</bean>
+
+
+
+
+	<!-- <mvc:resources mapping="/resources/**" location="/resources/" /> -->
+
+	<mvc:annotation-driven />
+	<!-- <bean id="websocket" class="com.cs.websocket.handler.WebsocketEndPoint"/> -->
+	<!-- allowed-origins 允許跨網域 避免unity web 造成 403 -->
+	<websocket:handlers allowed-origins="*">
+		<websocket:mapping path="/websocket" handler="webSocketHandlerImpl" />
+		<websocket:handshake-interceptors>
+			<bean class="com.cs.websocket.handshake.gamew.HandshakeInterceptor" />
+		</websocket:handshake-interceptors>
+
+	</websocket:handlers>
+
+
+
+
+
+</beans>

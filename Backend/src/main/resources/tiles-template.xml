@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ <!DOCTYPE tiles-definitions PUBLIC  
+        "-//Apache Software Foundation//DTD Tiles Configuration 3.0//EN"  
+        "http://tiles.apache.org/dtds/tiles-config_3_0.dtd">
+
+
+<tiles-definitions>
+    <definition name=".mainTemplate" template="/WEB-INF/jsp/template.jsp" >
+		<!-- <put-attribute name="header" value="/WEB-INF/jsp/template.jsp" /> -->
+		<put-attribute name="body" value="" />
+		<!-- <put-attribute name="footer" value="/WEB-INF/jsp/footer.jsp" /> -->
+		<put-list-attribute name="javascripts">
+		<!--
+			<add-attribute value="/resource/assets/javascripts/vendors/jquery.min.js" />
+			<add-attribute value="/resource/assets/javascripts/vendors/fastclick.js" />
+			<add-attribute value="/resource/assets/javascripts/vendors/svg4everybody.min.js" />
+			<add-attribute value="/resource/assets/javascripts/vendors/jquery.colorbox.js" />
+			<add-attribute value="/resource/assets/javascripts/initialization.js" />
+			<add-attribute value="/resource/assets/javascripts/vendors/accordion.js" />
+			<add-attribute value="/resource/assets/javascripts/vendors/swiper.js" />
+			<add-attribute value="/resource/common/js/jquery.cookie-1.4.1.js" />	
+		-->
+		</put-list-attribute>
+	</definition>
+	<!-- 空白頁面模組 -->
+	<definition name=".popwindow" template="/WEB-INF/jsp/popwindow.jsp" >
+		<put-attribute name="body" value="" />
+	</definition>
+	
+	<!-- 選單頁面模組 -->
+    <definition name=".experienceTemplate" template="/WEB-INF/jsp/template.jsp" >
+		<put-attribute name="body" value="" />
+	</definition>
+
+	<!-- 使用選單頁面模組 -->
+	<definition name="/index" extends=".mainTemplate">
+	    <put-attribute name="body"	value="/WEB-INF/jsp/pages/indexbody.jsp" />
+	</definition>
+	
+	<definition name="/tables" extends=".mainTemplate">
+	    <put-attribute name="body"	value="/WEB-INF/jsp/pages/tables.jsp" />
+	</definition>
+	
+	<definition name="/forms" extends=".mainTemplate">
+	    <put-attribute name="body"	value="/WEB-INF/jsp/pages/forms.jsp" />
+	</definition>
+	
+	<definition name="/icons" extends=".mainTemplate">
+	    <put-attribute name="body"	value="/WEB-INF/jsp/pages/icons.jsp" />
+	</definition>
+	
+	<!-- 權限功能 -->
+	<!-- 功能列表 -->
+	<definition name="/competence/action" extends=".mainTemplate">
+	    <put-attribute name="body"	value="/WEB-INF/jsp/pages/competence/action.jsp" />
+	</definition>
+	<!-- 人員設定 -->
+	<definition name="/competence/users" extends=".mainTemplate">
+	    <put-attribute name="body"	value="/WEB-INF/jsp/pages/competence/users.jsp" />
+	</definition>
+	<!-- 排程資訊 -->
+	<definition name="/competence/tasks" extends=".mainTemplate">
+	    <put-attribute name="body"	value="/WEB-INF/jsp/pages/competence/tasks.jsp" />
+	</definition>
+	
+	
+	<!-- 使用空白頁面模組 -->
+	<definition name="/login" extends=".popwindow">
+	    <put-attribute name="body"	value="/WEB-INF/jsp/pages/login.jsp" />
+	</definition>
+	  
+
+	
+	
+</tiles-definitions>

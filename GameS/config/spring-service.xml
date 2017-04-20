@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+						http://www.springframework.org/schema/beans/spring-beans.xsd            
+                      	http://www.springframework.org/schema/context 
+                      	http://www.springframework.org/schema/context/spring-context.xsd
+                      	http://www.springframework.org/schema/aop 
+                      	http://www.springframework.org/schema/aop/spring-aop.xsd">
+
+	<context:annotation-config />
+	<context:property-placeholder location="classpath*:*.properties" />
+	<context:component-scan base-package="com.cs.util" />
+	<context:component-scan base-package="com.cs.data" />
+	<context:component-scan base-package="com.cs.service" />
+	<context:component-scan base-package="com.cs.network" />
+	<context:component-scan base-package="com.cs.aop" /> 
+	
+	<!-- quartz -->
+	<context:component-scan base-package="com.cs.handler.quartz" /> 
+	<context:component-scan base-package="com.cs.config.quartz" /> 
+	
+	<aop:aspectj-autoproxy />
+
+	<!-- 封包處理設定 start here -->
+	<!-- mina socket server 業務邏輯處理器 -->
+	<bean id="calculatorHandler" class="com.cs.network.handler.games.CalculatorHandler" /> 
+	<!-- 日誌 -->
+    <bean id="loggingFilter" class="org.apache.mina.filter.logging.LoggingFilter" /> 
+    <!-- 定義要使用封包過濾器 -->
+    <bean id="calculatorCodecFilter" class="org.apache.mina.filter.codec.ProtocolCodecFilter"> 
+        <constructor-arg>
+        	<!-- 斷行當作 封包結束
+        	<bean class="org.apache.mina.filter.codec.textline.TextLineCodecFactory" > 
+        		<constructor-arg value="UTF-8"/>
+            </bean>
+        	 -->
+        	<!-- 要先傳送封包長度 在傳送封包 
+            <bean class="org.apache.mina.filter.codec.prefixedstring.PrefixedStringCodecFactory" > 
+            	<constructor-arg value="UTF-8"/>
+            </bean>
+            -->
+            <!-- 要先傳送封包長度 在傳送封包(自訂格式封包長度) -->
+             <bean class="com.cs.network.protocol.games.PrefixedStringCodecFactory" > 
+            	<constructor-arg value="UTF-8"/>
+            </bean>
+            
+        </constructor-arg> 
+    </bean> 
+    <!-- 過濾器    -->
+    <bean id="filterChainBuilder"
+        class="org.apache.mina.core.filterchain.DefaultIoFilterChainBuilder"> 
+        <property name="filters"> 
+            <map> 
+                <entry key="loggingFilter" value-ref="loggingFilter" /> 
+                <entry key="codecFilter" value-ref="calculatorCodecFilter" /> 
+                </map> 
+        </property> 
+    </bean> 
+    <!-- 監聽IP及port對象 -->
+    <bean
+        class="org.springframework.beans.factory.config.CustomEditorConfigurer">
+        <property name="customEditors">
+            <map>
+                <entry key="java.net.SocketAddress" value="org.apache.mina.integration.beans.InetSocketAddressEditor" >
+                </entry>
+            </map>
+        </property>
+    </bean>
+    
+    <!-- 訊息監聽 -->
+    <bean id="ioAcceptor" class="org.apache.mina.transport.socket.nio.NioSocketAcceptor"
+        init-method="bind" destroy-method="unbind"> 
+        <!-- 監聽port -->
+        <property name="defaultLocalAddress" value=":9090" /> 
+        <!-- 消息處理類別 -->
+        <property name="handler" ref="calculatorHandler" />
+        <!-- 設定過濾器 -->
+        <property name="filterChainBuilder" ref="filterChainBuilder" /> 
+    </bean>
+  	
+  	 <!-- session config --> 
+    <bean id="sessionConfig" factory-bean="ioAcceptor" factory-method="getSessionConfig" > 
+        <property name="bothIdleTime" value="3600"/> <!-- 閒置時間 單位秒-->
+        <property name="receiveBufferSize" value="2048"/> <!-- 讀取緩衝區size -->
+        <property name="sendBufferSize"  value="2048"></property> 
+        <property name="writeTimeout" value="30" /><!-- 設置寫入時間 default:60 --> 
+    </bean>
+	<!-- 封包處理設定 end here -->
+	
+</beans>
